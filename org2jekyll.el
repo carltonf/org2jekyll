@@ -358,15 +358,14 @@ Otherwise, display the error messages about the missing mandatory values."
   (org2jekyll-read-metadata-and-execute
    (lambda (org-metadata org-file)
      (let ((blog-project (assoc-default "layout" org-metadata))
-           (backup-file (format "%s.org2jekyll" org-file)))
-       (copy-file org-file backup-file t t t)
-       (with-temp-file org-file
+           (page-file (format "%s-page.org" (file-name-sans-extension org-file))))
+       ;; (copy-file org-file page-file t t t)
+       (with-temp-file page-file
          (insert-file-contents org-file)
          (goto-char (point-min))
-         (insert (org2jekyll--to-yaml-header org-metadata))
-         (org-publish-file org-file (assoc blog-project org-publish-project-alist)))
-       (copy-file backup-file org-file t t t)
-       (delete-file backup-file)))
+         (insert (org2jekyll--to-yaml-header org-metadata)))
+       (org-publish-file page-file (assoc blog-project org-publish-project-alist))
+       (delete-file page-file)))
    org-file))
 
 (defun org2jekyll-post-p (layout)
